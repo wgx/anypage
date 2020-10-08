@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title">This is anypage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/awsm.css@3.0.7/dist/awsm.min.css" integrity="sha256-7WetaqTEAenc+hkI4JHYAc317ZzzI6BuoPSZb3Ggr2M=" crossorigin="anonymous">
+</head>
+
+<body>
+    <main>
+        <section>
+            <header>
+                <h1 id="heading1">This is anypage</h1>
+            </header>
+            <h2 id="heading2">The URL is the content.</h2>
+            <p id="body">
+                The page is described by a JSON object with these attributes:
+                <br><br>
+                    <code>
+                    {
+                        "h1":"This is the title",
+                        "h2":"This is the subtitle",
+                        "body":"The quick brown fox jumped over the lazy dog, the quick brown fox jumped over the lazy dog.",
+                        "footer":"This is the footer"
+                    }
+                    </code>
+                <br><br>
+                Encode the JSON as base64 and append to the URL, <a href="/?eyJoMSI6IlRoaXMgaXMgdGhlIHRpdGxlIiwiaDIiOiJUaGlzIGlzIHRoZSBzdWJ0aXRsZSIsImJvZHkiOiJUaGUgcXVpY2sgYnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZywgdGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuIiwiZm9vdGVyIjoiVGhpcyBpcyB0aGUgZm9vdGVyIn0=">like this</a>. 
+            </p>
+        </section>
+    </main>
+    <footer id="footer">Made by @<a href="https://github.com/wgx/">wgx</a></footer>
+</body>
+<script>
+var urlparam = window.location.search.substr(1);
+var decoded = atob(urlparam); 
+var parsed = JSON.parse(decoded);
+document.getElementById("title").innerHTML=parsed.h1;
+document.getElementById("heading1").innerHTML=parsed.h1;
+document.getElementById("heading2").innerHTML=parsed.h2;
+document.getElementById("body").innerHTML=parsed.body;
+document.getElementById("footer").innerHTML=parsed.footer;
+</script>
+</html>
