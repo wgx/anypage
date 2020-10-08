@@ -1,4 +1,4 @@
-# anypage
+# Anypage
 On-demand web pages defined by JSON in the URL
 
 ## The URL is the content.
