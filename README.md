@@ -1,4 +1,4 @@
-# [Anypage](https://wgx.github.io/anypage/)
+# ☁️📄 [Anypage](https://wgx.github.io/anypage/)
 
 On-demand web pages defined by JSON in the URL
 
