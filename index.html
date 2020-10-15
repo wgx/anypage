@@ -4,7 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="title">This is anypage</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/awsm.css@3.0.7/dist/awsm.min.css" integrity="sha256-7WetaqTEAenc+hkI4JHYAc317ZzzI6BuoPSZb3Ggr2M=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/awsm.css@3.0.7/dist/awsm.min.css" integrity="sha256-7WetaqTEAenc+hkI4JHYAc317ZzzI6BuoPSZb3Ggr2M=" crossorigin="anonymous">    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <style>
+        canvas {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        .center {
+            margin: auto;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
 
 <body>
@@ -30,7 +45,11 @@
             </p>
         </section>
     </main>
+
     <footer id="footer">Made by @<a href="https://github.com/wgx/">wgx</a> • <a href="https://github.com/wgx/anypage">Code on Github</a></footer>
+    <div class="center" id="qrbutton" onclick="showQR()"><a href="#">QR</a></div>
+    <canvas id="qr" style="display:none"></canvas>
+
 <script>
 var urlparam = window.location.search.substr(1);
 var decoded = atob(urlparam); 
@@ -40,6 +59,17 @@ document.getElementById("heading1").innerHTML=parsed.h1;
 document.getElementById("heading2").innerHTML=parsed.h2;
 document.getElementById("body").innerHTML=parsed.body;
 document.getElementById("footer").innerHTML=parsed.footer;
+
+function showQR() {
+    var qr = new QRious({
+        element: document.getElementById('qr'),
+        value: window.location.href,
+        size: 192
+    });
+    document.getElementById("qrbutton").style.display = "none";
+    document.getElementById("qr").style.display = "block";
+}
+
 </script>
 </body>
 </html>
