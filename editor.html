@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title">This is anypage</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/awsm.css@3.0.7/dist/awsm.min.css" integrity="sha256-7WetaqTEAenc+hkI4JHYAc317ZzzI6BuoPSZb3Ggr2M=" crossorigin="anonymous">    
+</head>
+
+<body>
+    <main>
+        <section>
+            <header>
+                <h1>
+                <label for="heading1">Heading 1</label>
+                <input type="text" id="heading1" />
+                </h1>
+            </header>
+            <h2>
+                <label for="heading1">Heading 2</label>
+                <input type="text" id="heading2" />
+            </h2>
+            <p>
+                <label for="body">Body</label>
+                <textarea type="text" id="body"></textarea>
+            </p>
+        </section>
+    </main>
+
+    <footer >
+        <label for="body">Footer</label>
+        <input type="text" id="footer" />
+    </footer>
+   
+    <main>
+        <section>
+            <p id="generate">
+                <button onclick="generate()">Create anypage</button>
+            </p>
+        </section>
+    </main>
+
+<script>
+
+// change this if you want to run your own Anypage
+const siteName = "https://wgx.github.io/anypage/?"
+
+function generate(){
+
+    var anypage = new Object();
+    anypage.h1 = document.getElementById("heading1").value;
+    anypage.h2 = document.getElementById("heading2").value;
+    anypage.body = document.getElementById("body").value;
+    anypage.footer = document.getElementById("footer").value;
+
+    // convert the object into a string
+    var string = JSON.stringify(anypage);
+
+    // base64 it and make the link
+    var pageLink = siteName + btoa(unescape(encodeURIComponent(string)));
+
+    // give folks the link
+    var a = document.createElement('a');
+        var linkText = document.createTextNode(pageLink);
+        a.appendChild(linkText);
+        a.title = pageLink;
+        a.href = pageLink;
+        document.getElementById("generate").appendChild(a);
+};
+
+</script>
+</body>
+</html>

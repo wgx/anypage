@@ -47,12 +47,12 @@
     </main>
 
     <footer id="footer">Made by @<a href="https://github.com/wgx/">wgx</a> • <a href="https://github.com/wgx/anypage">Code on Github</a></footer>
-    <div class="center" id="qrbutton" onclick="showQR()"><a href="#">QR</a></div>
+    <div class="center" id="qrbutton"><a href="#" onclick="showQR()">QR</a> • <a href="">Editor</a></div>
     <canvas id="qr" style="display:none"></canvas>
 
 <script>
 var urlparam = window.location.search.substr(1);
-var decoded = atob(urlparam); 
+var decoded = decodeURIComponent(escape(window.atob(urlparam)));
 var parsed = JSON.parse(decoded);
 document.getElementById("title").innerHTML=parsed.h1;
 document.getElementById("heading1").innerHTML=parsed.h1;
@@ -66,7 +66,6 @@ function showQR() {
         value: window.location.href,
         size: 192
     });
-    document.getElementById("qrbutton").style.display = "none";
     document.getElementById("qr").style.display = "block";
 }
 
