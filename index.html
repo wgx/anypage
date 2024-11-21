@@ -46,8 +46,8 @@
         </section>
     </main>
 
-    <footer id="footer">Made by @<a href="https://github.com/wgx/">wgx</a> • <a href="https://github.com/wgx/anypage">Code on Github</a></footer>
-    <div class="center" id="qrbutton"><a href="#" onclick="showQR()">QR</a> • <a href="https://wgx.github.io/anypage/editor">Create anypage</a></div>
+    <footer id="footer">Hosted on anypage made by @<a href="https://github.com/wgx/">wgx</a> • <a href="https://github.com/wgx/anypage">Code on Github</a></footer>
+    <div class="center" id="qrbutton"><a href="#" onclick="showQR()">QR Link</a> • <a href="https://wgx.github.io/anypage/editor">Create your anypage</a></div>
     <canvas id="qr" style="display:none"></canvas>
 
 <script>
@@ -64,7 +64,7 @@ function showQR() {
     var qr = new QRious({
         element: document.getElementById('qr'),
         value: window.location.href,
-        size: 192
+        size: 256
     });
     document.getElementById("qr").style.display = "block";
 }
