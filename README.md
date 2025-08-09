@@ -19,4 +19,8 @@ Encode the JSON as base64 and append to the URL, [like this](https://wgx.github.
 
 ## ✏️ [Editor](https://wgx.github.io/anypage/editor)
 
-Why should those other CMSs get all the fancy toys? Anypage has got a [WYSIWYG editor](https://wgx.github.io/anypage/editor) now.
+Why should those other (real) CMSs get all the fancy toys? Anypage has got an [editor](https://wgx.github.io/anypage/editor) now.
+
+## 💵 Chuck a tip my way
+
+[Buy me a coffee](https://ko-fi.com/wllgrnt)
