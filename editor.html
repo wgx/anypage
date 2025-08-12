@@ -1,76 +1,182 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="title">This is anypage</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/awsm.css@3.0.7/dist/awsm.min.css" integrity="sha256-7WetaqTEAenc+hkI4JHYAc317ZzzI6BuoPSZb3Ggr2M=" crossorigin="anonymous">    
+    <title>Anypage Editor</title>
+
+    <!-- Using Tailwind CSS for a modern, utility-first approach -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for a nicer typeface -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Using Inter as the default font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for form inputs for a consistent look */
+        .form-input {
+            @apply w-full px-4 py-2 bg-gray-100 border-2 border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition;
+        }
+        /* Simple transition for button feedback */
+        .btn {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 
-<body>
-    <main>
-        <section>
-            <header>
-                <h1>
-                <label for="heading1">Heading 1</label>
-                <input type="text" id="heading1" />
-                </h1>
-            </header>
-            <h2>
-                <label for="heading1">Heading 2</label>
-                <input type="text" id="heading2" />
-            </h2>
-            <p>
-                <label for="body">Body</label>
-                <textarea type="text" id="body"></textarea>
-            </p>
-        </section>
-    </main>
+<body class="bg-gray-50 text-gray-800">
 
-    <footer >
-        <label for="body">Footer</label>
-        <input type="text" id="footer" />
-    </footer>
-   
-    <main>
-        <section>
-            <p id="generate">
-                <button onclick="generate()">Create anypage</button>
-            </p>
-            <p>
-                <a href="/anypage/">No, cancel.</a>
-            </p>
+    <!-- Main container with responsive padding and max-width -->
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl min-h-screen flex flex-col">
+
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900">Anypage Editor</h1>
+            <p class="text-lg text-gray-600 mt-2">Create your own content-in-a-URL webpage.</p>
+        </header>
+
+        <!-- Main editor card -->
+        <main class="bg-white p-6 sm:p-8 rounded-xl shadow-md flex-grow">
+            <div class="space-y-6">
+                <!-- H1 Input -->
+                <div>
+                    <label for="h1" class="block text-sm font-medium text-gray-700 mb-1">Title (h1)</label>
+                    <input type="text" id="h1" class="form-input" placeholder="Your main page title">
+                </div>
+                
+                <!-- H2 Input -->
+                <div>
+                    <label for="h2" class="block text-sm font-medium text-gray-700 mb-1">Subtitle (h2)</label>
+                    <input type="text" id="h2" class="form-input" placeholder="A catchy subtitle">
+                </div>
+
+                <!-- Body Textarea -->
+                <div>
+                    <label for="body" class="block text-sm font-medium text-gray-700 mb-1">Body Content</label>
+                    <textarea id="body" rows="8" class="form-input" placeholder="Tell your story here. You can use line breaks."></textarea>
+                </div>
+
+                <!-- Footer Input -->
+                <div>
+                    <label for="footer" class="block text-sm font-medium text-gray-700 mb-1">Footer</label>
+                    <input type="text" id="footer" class="form-input" placeholder="e.g., Created by Your Name">
+                </div>
+            </div>
+        </main>
+
+        <!-- Output and Actions Section -->
+        <section class="bg-white mt-8 p-6 sm:p-8 rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Your Anypage URL</h2>
+            <p class="text-gray-600 mb-4">This URL contains all your content. Share it anywhere!</p>
+            
+            <!-- URL Display -->
+            <div class="bg-gray-100 p-4 rounded-lg overflow-x-auto">
+                <code id="output-url" class="text-sm text-gray-800 break-all"></code>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex flex-col sm:flex-row sm:justify-end sm:space-x-4 space-y-3 sm:space-y-0">
+                <button onclick="copyUrlToClipboard()" class="btn w-full sm:w-auto bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-500">
+                    Copy URL
+                </button>
+                <a id="preview-link" href="#" target="_blank" class="btn w-full sm:w-auto text-center bg-gray-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-700">
+                    Preview
+                </a>
+            </div>
+            <div id="copy-feedback" class="text-green-600 font-semibold mt-4 h-6 text-right"></div>
         </section>
-    </main>
+
+    </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
 
-// change this if you want to run your own Anypage
-const siteName = "https://wgx.github.io/anypage/?"
+    // --- DOM Element References ---
+    const h1Input = document.getElementById('h1');
+    const h2Input = document.getElementById('h2');
+    const bodyInput = document.getElementById('body');
+    const footerInput = document.getElementById('footer');
+    const outputUrlEl = document.getElementById('output-url');
+    const previewLinkEl = document.getElementById('preview-link');
+    const copyFeedbackEl = document.getElementById('copy-feedback');
 
-function generate(){
+    // --- The base URL for the Anypage viewer ---
+    // This assumes the editor is in a sub-path or the same directory.
+    // Adjust if your file structure is different.
+    const baseUrl = window.location.href.replace(/editor(\.html)?$/, '');
 
-    var anypage = new Object();
-    anypage.h1 = document.getElementById("heading1").value;
-    anypage.h2 = document.getElementById("heading2").value;
-    anypage.body = document.getElementById("body").value;
-    anypage.footer = document.getElementById("footer").value;
 
-    // convert the object into a string
-    var string = JSON.stringify(anypage);
+    /**
+     * Gathers data, encodes it, and updates the output URL.
+     */
+    function updateUrl() {
+        // 1. Create a data object from the form inputs.
+        const content = {
+            h1: h1Input.value || "Anypage Title", // Default values
+            h2: h2Input.value || "Your content lives in the URL.",
+            body: bodyInput.value || "This page was generated by the Anypage editor.",
+            footer: footerInput.value || "Powered by Anypage",
+        };
 
-    // base64 it and make the link
-    var pageLink = siteName + btoa(unescape(encodeURIComponent(string)));
+        // 2. Convert the object to a JSON string.
+        const jsonString = JSON.stringify(content);
 
-    // give folks the link
-    var a = document.createElement('a');
-        var linkText = document.createTextNode(pageLink);
-        a.appendChild(linkText);
-        a.title = pageLink;
-        a.href = pageLink;
-        document.getElementById("generate").appendChild(a);
-};
+        // 3. Encode the JSON string into Base64.
+        // This method correctly handles Unicode characters.
+        const base64String = btoa(unescape(encodeURIComponent(jsonString)));
 
+        // 4. Construct the full URL.
+        const finalUrl = `${baseUrl}?${base64String}`;
+
+        // 5. Update the page with the new URL.
+        outputUrlEl.textContent = finalUrl;
+        previewLinkEl.href = finalUrl;
+    }
+
+    // --- Event Listeners ---
+    // Add an 'input' event listener to each form element to update the URL in real-time.
+    [h1Input, h2Input, bodyInput, footerInput].forEach(input => {
+        input.addEventListener('input', updateUrl);
+    });
+
+    // --- Initial Call ---
+    // Generate the initial URL when the page loads.
+    updateUrl();
+});
+
+/**
+ * Copies the generated URL from the output element to the clipboard.
+ */
+function copyUrlToClipboard() {
+    const urlToCopy = document.getElementById('output-url').textContent;
+    const copyFeedbackEl = document.getElementById('copy-feedback');
+
+    navigator.clipboard.writeText(urlToCopy).then(() => {
+        // Success feedback
+        copyFeedbackEl.textContent = 'URL copied to clipboard!';
+        setTimeout(() => {
+            copyFeedbackEl.textContent = '';
+        }, 2500); // Clear message after 2.5 seconds
+    }).catch(err => {
+        // Error feedback
+        console.error('Failed to copy URL: ', err);
+        copyFeedbackEl.textContent = 'Failed to copy!';
+        copyFeedbackEl.style.color = 'red';
+        setTimeout(() => {
+            copyFeedbackEl.textContent = '';
+            copyFeedbackEl.style.color = ''; // Reset color
+        }, 2500);
+    });
+}
 </script>
+
 </body>
 </html>
