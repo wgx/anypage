@@ -65,7 +65,7 @@
 
         <!-- Footer section -->
         <footer id="footer" class="text-center text-gray-500 mt-8 break-words">
-            <a href="https://wgx.github.io/anypage/">Hosted on Anypage</a> • <a href="https://github.com/wgx/anypage" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Code on GitHub</a> • <a href="https://wgx.github.io/anypage/editor" class="text-blue-600 hover:underline">Create your own</a>
+            Hosted on Anypage • <a href="https://github.com/wgx/anypage" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Code on GitHub</a> • <a href="https://wgx.github.io/anypage/editor" class="text-blue-600 hover:underline">Create your own</a>
         </footer>
 
         <!-- Action buttons and QR code display -->
@@ -96,6 +96,9 @@
         const contentContainerEl = document.getElementById('content-container');
         const errorContainerEl = document.getElementById('error-container');
         const copyFeedbackEl = document.getElementById('copy-feedback');
+        
+        // Store the original footer links to be re-appended later.
+        const originalFooterHTML = footerEl.innerHTML;
 
         /**
          * Main function to parse the URL and render the page content.
@@ -112,21 +115,15 @@
 
             try {
                 // --- Decoding and Parsing ---
-                // 1. Decode Base64 string to a binary string.
                 const binaryString = window.atob(urlParam);
-                // 2. Create a byte array from the binary string.
                 const bytes = new Uint8Array(binaryString.length);
                 for (let i = 0; i < binaryString.length; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
-                // 3. Decode the byte array as a UTF-8 string. This properly handles special characters.
                 const decodedJson = new TextDecoder().decode(bytes);
-                // 4. Parse the resulting JSON string.
                 const content = JSON.parse(decodedJson);
 
                 // --- Rendering Content ---
-                // Use `textContent` instead of `innerHTML` to prevent XSS vulnerabilities.
-                // This treats all input as plain text, not HTML.
                 if (content.h1) {
                     titleEl.textContent = content.h1;
                     h1El.textContent = content.h1;
@@ -135,20 +132,22 @@
                     h2El.textContent = content.h2;
                 }
                 if (content.body) {
-                    // For the body, we can allow simple line breaks by replacing \n with <br>
-                    // after sanitizing the rest of the content.
                     const sanitizedBody = document.createElement('div');
-                    sanitizedBody.textContent = content.body; // First, treat everything as text
-                    bodyEl.innerHTML = sanitizedBody.innerHTML.replace(/\n/g, '<br>'); // Then allow line breaks
+                    sanitizedBody.textContent = content.body;
+                    bodyEl.innerHTML = sanitizedBody.innerHTML.replace(/\n/g, '<br>');
                 }
                 if (content.footer) {
-                    footerEl.textContent = content.footer;
+                    // Create a span to safely set the custom footer text.
+                    const customFooterSpan = document.createElement('span');
+                    customFooterSpan.textContent = content.footer;
+                    
+                    // Combine the custom text with the original footer links.
+                    footerEl.innerHTML = `${customFooterSpan.textContent} &bull; ${originalFooterHTML}`;
                 }
 
             } catch (error) {
                 // --- Error Handling ---
                 console.error("Failed to parse Anypage content:", error);
-                // Hide the default content and show a user-friendly error message.
                 contentContainerEl.classList.add('hidden');
                 errorContainerEl.classList.remove('hidden');
             }
@@ -167,7 +166,6 @@
             qrCanvas.style.display = 'none';
             return;
         }
-        // Generate QR code
         new QRious({
             element: qrCanvas,
             value: window.location.href,
@@ -186,19 +184,17 @@
     function copyUrlToClipboard() {
         const copyFeedbackEl = document.getElementById('copy-feedback');
         navigator.clipboard.writeText(window.location.href).then(() => {
-            // Success feedback
             copyFeedbackEl.textContent = 'Link copied to clipboard!';
             setTimeout(() => {
                 copyFeedbackEl.textContent = '';
-            }, 2000); // Clear message after 2 seconds
+            }, 2000);
         }).catch(err => {
-            // Error feedback
             console.error('Failed to copy URL: ', err);
             copyFeedbackEl.textContent = 'Failed to copy!';
             copyFeedbackEl.style.color = 'red';
             setTimeout(() => {
                 copyFeedbackEl.textContent = '';
-                copyFeedbackEl.style.color = ''; // Reset color
+                copyFeedbackEl.style.color = '';
             }, 2000);
         });
     }
