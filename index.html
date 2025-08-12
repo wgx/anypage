@@ -1,74 +1,208 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="title">This is anypage</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/awsm.css@3.0.7/dist/awsm.min.css" integrity="sha256-7WetaqTEAenc+hkI4JHYAc317ZzzI6BuoPSZb3Ggr2M=" crossorigin="anonymous">    
+    <title>Anypage</title>
+
+    <!-- Using Tailwind CSS for a modern, utility-first approach -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- QR Code generation library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+    <!-- Google Fonts for a nicer typeface -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
     <style>
-        canvas {
-            padding-left: 0;
-            padding-right: 0;
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
+        /* Using Inter as the default font */
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        .center {
-            margin: auto;
-            text-align: center;
-            font-size: 0.75rem;
+        /* Simple transition for button feedback */
+        .btn {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 
-<body>
-    <main>
-        <section>
-            <header>
-                <h1 id="heading1">This is anypage</h1>
-            </header>
-            <h2 id="heading2">The URL is the content.</h2>
-            <p id="body">
-                The page is described by a JSON object with these attributes:
-                <br><br>
-                    <code>
-                    {
-                        "h1":"This is the title",
-                        "h2":"This is the subtitle",
-                        "body":"The quick brown fox jumped over the lazy dog, the quick brown fox jumped over the lazy dog.",
-                        "footer":"This is the footer"
-                    }
-                    </code>
-                <br><br>
-                Encode the JSON as base64 and append to the URL, <a href="https://wgx.github.io/anypage/?eyJoMSI6IlRoaXMgaXMgdGhlIHRpdGxlIiwiaDIiOiJUaGlzIGlzIHRoZSBzdWJ0aXRsZSIsImJvZHkiOiJUaGUgcXVpY2sgYnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZywgdGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuIiwiZm9vdGVyIjoiVGhpcyBpcyB0aGUgZm9vdGVyIn0=">like this</a>. 
-            </p>
-        </section>
-    </main>
+<body class="bg-gray-50 text-gray-800">
 
-    <footer id="footer">Hosted on anypage made by @<a href="https://github.com/wgx/">wgx</a> • <a href="https://github.com/wgx/anypage">Code on Github</a> • <a href="https://ko-fi.com/wllgrnt">Buy me a coffee</a></footer>
-    <div class="center" id="qrbutton"><a href="#" onclick="showQR()">QR Link</a> • <a href="https://wgx.github.io/anypage/editor">Create your anypage</a></div>
-    <canvas id="qr" style="display:none"></canvas>
+    <!-- Main container with responsive padding and max-width -->
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl min-h-screen flex flex-col">
+
+        <!-- Main content card -->
+        <main id="content-container" class="bg-white p-6 sm:p-8 rounded-xl shadow-md flex-grow">
+            <header class="border-b pb-4 mb-4">
+                <h1 id="heading1" class="text-3xl sm:text-4xl font-extrabold text-gray-900 break-words">Anypage</h1>
+                <h2 id="heading2" class="text-xl sm:text-2xl text-gray-600 mt-2 break-words">The URL is the content.</h2>
+            </header>
+            
+            <!-- Body content area -->
+            <div id="body" class="prose prose-lg max-w-none text-gray-700 break-words">
+                <p>This page demonstrates how content can be encoded directly into a URL.</p>
+                <p>The page is described by a JSON object with these attributes:</p>
+                <pre class="bg-gray-100 p-4 rounded-lg"><code>{
+    "h1": "This is the title",
+    "h2": "This is the subtitle",
+    "body": "The quick brown fox...",
+    "footer": "This is the footer"
+}</code></pre>
+                <p>Encode the JSON as Base64 and append it to the URL's query string, <a href="?eyJoMSI6IkhlbGxvLCBBbnlwYWdlISIsImgyIjoiQSB3aG9sZSBuZXcgd2F5IHRvIGJ1aWxkIGEgcGFnZS4iLCJib2R5IjoiVGhpcyBlbnRpcmUgcGFnZSBpcyBnZW5lcmF0ZWQgZnJvbSB0aGUgVVJMLiBZb3UgY2FuIGNoYW5nZSB0aGUgdGV4dCBieSBlZGl0aW5nIHRoZSBqc29uLCBlbmNvZGluZyBpdCBpbiBCYXNlNjQsIGFuZCBwYXN0aW5nIGl0IGFzIGEgcXVlcnkgcGFyYW1ldGVyLiBJdCdzIGEgZnVuIGV4cGVyaW1lbnQgaW4gbWluaW1hbGlzdCB3ZWIgZGV2ZWxvcG1lbnQuIiwiZm9vdGVyIjoiQ3JhZnRlZCB3aXRoIOKdpO+4jyBieSB0aGUgQW55cGFnZSBjb21tdW5pdHkuIn0=" class="text-blue-600 hover:underline">like this</a>.</p>
+            </div>
+
+            <!-- Error message container, hidden by default -->
+            <div id="error-container" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+                <p class="font-bold">Invalid Content</p>
+                <p>The link appears to be broken or corrupted. Unable to load content from the URL.</p>
+            </div>
+        </main>
+
+        <!-- Footer section -->
+        <footer id="footer" class="text-center text-gray-500 mt-8 break-words">
+            <a href="https://wgx.github.io/anypage/">Hosted on Anypage</a> • <a href="https://github.com/wgx/anypage" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Code on GitHub</a> • <a href="https://wgx.github.io/anypage/editor" class="text-blue-600 hover:underline">Create your own</a>
+        </footer>
+
+        <!-- Action buttons and QR code display -->
+        <div class="text-center mt-4">
+            <div id="action-buttons" class="flex justify-center items-center space-x-4">
+                <button onclick="showQR()" class="btn bg-gray-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700">
+                    Show QR Link
+                </button>
+                <button onclick="copyUrlToClipboard()" class="btn bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500">
+                    Copy Link
+                </button>
+            </div>
+            <div id="copy-feedback" class="text-green-600 font-semibold mt-2 h-6"></div>
+            <canvas id="qr" class="hidden mx-auto mt-4 bg-white p-2 rounded-lg shadow-md"></canvas>
+        </div>
+    </div>
 
 <script>
-var urlparam = window.location.search.substr(1);
-var decoded = decodeURIComponent(escape(window.atob(urlparam)));
-var parsed = JSON.parse(decoded);
-document.getElementById("title").innerHTML=parsed.h1;
-document.getElementById("heading1").innerHTML=parsed.h1;
-document.getElementById("heading2").innerHTML=parsed.h2;
-document.getElementById("body").innerHTML=parsed.body;
-document.getElementById("footer").innerHTML=parsed.footer;
+    // Wait for the DOM to be fully loaded before running the script
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // --- DOM Element References ---
+        const titleEl = document.querySelector('title');
+        const h1El = document.getElementById('heading1');
+        const h2El = document.getElementById('heading2');
+        const bodyEl = document.getElementById('body');
+        const footerEl = document.getElementById('footer');
+        const contentContainerEl = document.getElementById('content-container');
+        const errorContainerEl = document.getElementById('error-container');
+        const copyFeedbackEl = document.getElementById('copy-feedback');
 
-function showQR() {
-    var qr = new QRious({
-        element: document.getElementById('qr'),
-        value: window.location.href,
-        size: 256
+        /**
+         * Main function to parse the URL and render the page content.
+         */
+        function renderPageFromUrl() {
+            // Get the Base64 encoded string from the URL (?ey...)
+            const urlParam = window.location.search.substring(1);
+
+            // If there's no parameter, the page shows the default content.
+            if (!urlParam) {
+                console.log("No URL parameter found. Displaying default content.");
+                return;
+            }
+
+            try {
+                // --- Decoding and Parsing ---
+                // 1. Decode Base64 string to a binary string.
+                const binaryString = window.atob(urlParam);
+                // 2. Create a byte array from the binary string.
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                // 3. Decode the byte array as a UTF-8 string. This properly handles special characters.
+                const decodedJson = new TextDecoder().decode(bytes);
+                // 4. Parse the resulting JSON string.
+                const content = JSON.parse(decodedJson);
+
+                // --- Rendering Content ---
+                // Use `textContent` instead of `innerHTML` to prevent XSS vulnerabilities.
+                // This treats all input as plain text, not HTML.
+                if (content.h1) {
+                    titleEl.textContent = content.h1;
+                    h1El.textContent = content.h1;
+                }
+                if (content.h2) {
+                    h2El.textContent = content.h2;
+                }
+                if (content.body) {
+                    // For the body, we can allow simple line breaks by replacing \n with <br>
+                    // after sanitizing the rest of the content.
+                    const sanitizedBody = document.createElement('div');
+                    sanitizedBody.textContent = content.body; // First, treat everything as text
+                    bodyEl.innerHTML = sanitizedBody.innerHTML.replace(/\n/g, '<br>'); // Then allow line breaks
+                }
+                if (content.footer) {
+                    footerEl.textContent = content.footer;
+                }
+
+            } catch (error) {
+                // --- Error Handling ---
+                console.error("Failed to parse Anypage content:", error);
+                // Hide the default content and show a user-friendly error message.
+                contentContainerEl.classList.add('hidden');
+                errorContainerEl.classList.remove('hidden');
+            }
+        }
+
+        // Run the render function on page load.
+        renderPageFromUrl();
     });
-    document.getElementById("qr").style.display = "block";
-}
 
+    /**
+     * Generates and displays a QR code for the current page URL.
+     */
+    function showQR() {
+        const qrCanvas = document.getElementById('qr');
+        if (qrCanvas.style.display === 'block') {
+            qrCanvas.style.display = 'none';
+            return;
+        }
+        // Generate QR code
+        new QRious({
+            element: qrCanvas,
+            value: window.location.href,
+            size: 256,
+            padding: 16,
+            background: 'white',
+            foreground: 'black'
+        });
+        qrCanvas.classList.remove('hidden');
+        qrCanvas.style.display = 'block';
+    }
+
+    /**
+     * Copies the current URL to the clipboard and provides user feedback.
+     */
+    function copyUrlToClipboard() {
+        const copyFeedbackEl = document.getElementById('copy-feedback');
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            // Success feedback
+            copyFeedbackEl.textContent = 'Link copied to clipboard!';
+            setTimeout(() => {
+                copyFeedbackEl.textContent = '';
+            }, 2000); // Clear message after 2 seconds
+        }).catch(err => {
+            // Error feedback
+            console.error('Failed to copy URL: ', err);
+            copyFeedbackEl.textContent = 'Failed to copy!';
+            copyFeedbackEl.style.color = 'red';
+            setTimeout(() => {
+                copyFeedbackEl.textContent = '';
+                copyFeedbackEl.style.color = ''; // Reset color
+            }, 2000);
+        });
+    }
 </script>
+
 </body>
 </html>
