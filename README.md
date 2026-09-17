@@ -1,4 +1,4 @@
-# ☁️📄 [Anypage](https://wgx.github.io/anypage/)
+# ☁️📄 [Anypage](https://studiowgx.github.io/anypage/)
 
 ## V 0.2.0 - September 2026 Update!
 
@@ -17,11 +17,11 @@ The page is described by a JSON object with these attributes:
 }
 ```
 
-Encode the JSON as base64 and append to the URL, [like this](https://wgx.github.io/anypage/?eyJoMSI6IlRoaXMgaXMgdGhlIHRpdGxlIiwiaDIiOiJUaGlzIGlzIHRoZSBzdWJ0aXRsZSIsImJvZHkiOiJUaGUgcXVpY2sgYnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZywgdGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuIiwiZm9vdGVyIjoiVGhpcyBpcyB0aGUgZm9vdGVyIn0=).
+Encode the JSON as base64 and append to the URL, [like this](https://studiowgx.github.io/anypage/?eyJoMSI6IlRoaXMgaXMgdGhlIHRpdGxlIiwiaDIiOiJUaGlzIGlzIHRoZSBzdWJ0aXRsZSIsImJvZHkiOiJUaGUgcXVpY2sgYnJvd24gZm94IGp1bXBlZCBvdmVyIHRoZSBsYXp5IGRvZywgdGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2cuIiwiZm9vdGVyIjoiVGhpcyBpcyB0aGUgZm9vdGVyIn0=).
 
-## ✏️ [Editor](https://wgx.github.io/anypage/editor)
+## ✏️ [Editor](https://studiowgx.github.io/anypage/editor)
 
-Why should those other (real) CMSs get all the fancy toys? Anypage has got an [editor](https://wgx.github.io/anypage/editor) now.
+Why should those other (real) CMSs get all the fancy toys? Anypage has got an [editor](https://studiowgx.github.io/anypage/editor) now.
 
 ## Limits and privacy
 
