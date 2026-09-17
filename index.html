@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- QR Code generation library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js" integrity="sha384-Dr98ddmUw2QkdCarNQ+OL7xLty7cSxgR0T7v1tq4UErS/qLV0132sBYTolRAFuOV" crossorigin="anonymous"></script>
 
     <!-- Google Fonts for a nicer typeface -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,29 +56,33 @@
                 <p>Encode the JSON as Base64 and append it to the URL's query string, <a href="?eyJoMSI6IkhlbGxvLCBBbnlwYWdlISIsImgyIjoiQSB3aG9sZSBuZXcgd2F5IHRvIGJ1aWxkIGEgcGFnZS4iLCJib2R5IjoiVGhpcyBlbnRpcmUgcGFnZSBpcyBnZW5lcmF0ZWQgZnJvbSB0aGUgVVJMLiBZb3UgY2FuIGNoYW5nZSB0aGUgdGV4dCBieSBlZGl0aW5nIHRoZSBqc29uLCBlbmNvZGluZyBpdCBpbiBCYXNlNjQsIGFuZCBwYXN0aW5nIGl0IGFzIGEgcXVlcnkgcGFyYW1ldGVyLiBJdCdzIGEgZnVuIGV4cGVyaW1lbnQgaW4gbWluaW1hbGlzdCB3ZWIgZGV2ZWxvcG1lbnQuIiwiZm9vdGVyIjoiQ3JhZnRlZCB3aXRoIOKdpO+4jyBieSB0aGUgQW55cGFnZSBjb21tdW5pdHkuIn0=" class="text-blue-600 hover:underline">like this</a>.</p>
             </div>
 
-            <!-- Error message container, hidden by default -->
-            <div id="error-container" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
-                <p class="font-bold">Invalid Content</p>
-                <p>The link appears to be broken or corrupted. Unable to load content from the URL.</p>
-            </div>
         </main>
+
+        <!-- Error message container, hidden by default -->
+        <div id="error-container" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert" aria-live="assertive">
+            <p class="font-bold">Invalid Content</p>
+            <p>The link appears to be broken or corrupted. Unable to load content from the URL.</p>
+        </div>
 
         <!-- Footer section -->
         <footer id="footer" class="text-center text-gray-500 mt-8 break-words">
-            Hosted on Anypage • <a href="https://github.com/wgx/anypage" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Code on GitHub</a> • <a href="https://wgx.github.io/anypage/editor" class="text-blue-600 hover:underline">Create your own</a>
+            Hosted on Anypage • <a href="https://github.com/wgx/anypage" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Code on GitHub</a>
         </footer>
 
         <!-- Action buttons and QR code display -->
         <div class="text-center mt-4">
             <div id="action-buttons" class="flex justify-center items-center space-x-4">
-                <button onclick="showQR()" class="btn bg-gray-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700">
+                <button id="qr-button" type="button" aria-expanded="false" class="btn bg-gray-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700">
                     Show QR Link
                 </button>
-                <button onclick="copyUrlToClipboard()" class="btn bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500">
+                <button id="copy-button" type="button" class="btn bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-500">
                     Copy Link
                 </button>
+                <a href="https://wgx.github.io/anypage/editor" class="btn bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-500">
+                    Create Your Own
+                </a>
             </div>
-            <div id="copy-feedback" class="text-green-600 font-semibold mt-2 h-6"></div>
+            <div id="copy-feedback" class="text-green-600 font-semibold mt-2 h-6" role="status" aria-live="polite"></div>
             <canvas id="qr" class="hidden mx-auto mt-4 bg-white p-2 rounded-lg shadow-md"></canvas>
         </div>
     </div>
@@ -95,10 +99,17 @@
         const footerEl = document.getElementById('footer');
         const contentContainerEl = document.getElementById('content-container');
         const errorContainerEl = document.getElementById('error-container');
+        const actionButtonsEl = document.getElementById('action-buttons');
+        const qrButtonEl = document.getElementById('qr-button');
+        const copyButtonEl = document.getElementById('copy-button');
+        const qrCanvasEl = document.getElementById('qr');
         const copyFeedbackEl = document.getElementById('copy-feedback');
+
+        qrButtonEl.addEventListener('click', showQR);
+        copyButtonEl.addEventListener('click', copyUrlToClipboard);
         
-        // Store the original footer links to be re-appended later.
-        const originalFooterHTML = footerEl.innerHTML;
+        // Store the original footer nodes to be re-appended without parsing user content as HTML.
+        const originalFooterNodes = Array.from(footerEl.childNodes).map(node => node.cloneNode(true));
 
         /**
          * Main function to parse the URL and render the page content.
@@ -123,6 +134,10 @@
                 const decodedJson = new TextDecoder().decode(bytes);
                 const content = JSON.parse(decodedJson);
 
+                if (!content || typeof content !== 'object' || Array.isArray(content)) {
+                    throw new Error('Content must be a JSON object.');
+                }
+
                 // --- Rendering Content ---
                 if (content.h1) {
                     titleEl.textContent = content.h1;
@@ -132,17 +147,25 @@
                     h2El.textContent = content.h2;
                 }
                 if (content.body) {
-                    const sanitizedBody = document.createElement('div');
-                    sanitizedBody.textContent = content.body;
-                    bodyEl.innerHTML = sanitizedBody.innerHTML.replace(/\n/g, '<br>');
+                    bodyEl.replaceChildren();
+                    String(content.body).split(/\r?\n/).forEach((line, index) => {
+                        if (index > 0) {
+                            bodyEl.appendChild(document.createElement('br'));
+                        }
+                        bodyEl.appendChild(document.createTextNode(line));
+                    });
                 }
                 if (content.footer) {
-                    // Create a span to safely set the custom footer text.
-                    const customFooterSpan = document.createElement('span');
-                    customFooterSpan.textContent = content.footer;
-                    
-                    // Combine the custom text with the original footer links.
-                    footerEl.innerHTML = `${customFooterSpan.textContent} &bull; ${originalFooterHTML}`;
+                    const customFooter = String(content.footer).trim();
+                    const isAnypageAttribution = /^(?:powered|hosted)\s+by\s+anypage$/i.test(customFooter) || /^hosted\s+on\s+anypage$/i.test(customFooter);
+
+                    if (!isAnypageAttribution) {
+                        footerEl.replaceChildren(
+                            document.createTextNode(customFooter),
+                            document.createTextNode(` ${String.fromCharCode(8226)} `),
+                            ...originalFooterNodes.map(node => node.cloneNode(true))
+                        );
+                    }
                 }
 
             } catch (error) {
@@ -150,6 +173,8 @@
                 console.error("Failed to parse Anypage content:", error);
                 contentContainerEl.classList.add('hidden');
                 errorContainerEl.classList.remove('hidden');
+                actionButtonsEl.classList.add('hidden');
+                qrCanvasEl.classList.add('hidden');
             }
         }
 
@@ -162,8 +187,15 @@
      */
     function showQR() {
         const qrCanvas = document.getElementById('qr');
+        const qrButton = document.getElementById('qr-button');
         if (qrCanvas.style.display === 'block') {
             qrCanvas.style.display = 'none';
+            qrCanvas.classList.add('hidden');
+            qrButton.setAttribute('aria-expanded', 'false');
+            return;
+        }
+        if (typeof QRious !== 'function') {
+            showCopyFeedback('QR generation is unavailable.');
             return;
         }
         new QRious({
@@ -176,19 +208,25 @@
         });
         qrCanvas.classList.remove('hidden');
         qrCanvas.style.display = 'block';
+        qrButton.setAttribute('aria-expanded', 'true');
     }
 
     /**
      * Copies the current URL to the clipboard and provides user feedback.
      */
-    function copyUrlToClipboard() {
+    async function copyUrlToClipboard() {
         const copyFeedbackEl = document.getElementById('copy-feedback');
-        navigator.clipboard.writeText(window.location.href).then(() => {
+        if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+            showCopyFeedback('Clipboard access is unavailable.');
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(window.location.href);
             copyFeedbackEl.textContent = 'Link copied to clipboard!';
             setTimeout(() => {
                 copyFeedbackEl.textContent = '';
             }, 2000);
-        }).catch(err => {
+        } catch (err) {
             console.error('Failed to copy URL: ', err);
             copyFeedbackEl.textContent = 'Failed to copy!';
             copyFeedbackEl.style.color = 'red';
@@ -196,7 +234,17 @@
                 copyFeedbackEl.textContent = '';
                 copyFeedbackEl.style.color = '';
             }, 2000);
-        });
+        }
+    }
+
+    function showCopyFeedback(message) {
+        const copyFeedbackEl = document.getElementById('copy-feedback');
+        copyFeedbackEl.textContent = message;
+        copyFeedbackEl.style.color = 'red';
+        setTimeout(() => {
+            copyFeedbackEl.textContent = '';
+            copyFeedbackEl.style.color = '';
+        }, 2000);
     }
 </script>
 
