@@ -1,5 +1,7 @@
 # ☁️📄 [Anypage](https://wgx.github.io/anypage/)
 
+## V 0.2.0 - September 2026 Update!
+
 On-demand web pages defined by JSON in the URL
 
 ## The URL is the content.
